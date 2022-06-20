@@ -1,7 +1,9 @@
-use eframe::{egui, NativeOptions};
+use eframe::{egui, NativeOptions, IconData};
 use emath::vec2;
 use clipboard::{ClipboardProvider, ClipboardContext};
 use image::io;
+
+mod icon;
 
 struct I2A {
     header_str: String,
@@ -50,6 +52,11 @@ impl eframe::App for I2A {
 
 fn main() {
     let options = NativeOptions {
+        icon_data: Some(IconData {
+            rgba: icon::ICON.to_vec(),
+            width: 48,
+            height: 48,
+        }),
         resizable: false,
         initial_window_size: Some(vec2(320.0, 130.0)),
         ..NativeOptions::default()
