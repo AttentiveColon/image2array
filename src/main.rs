@@ -4,18 +4,18 @@ use clipboard::{ClipboardProvider, ClipboardContext};
 use image::io;
 
 struct I2A {
-    text: String,
-    my_str: String,
-    output: String,
+    header_str: String,
+    path_str: String,
+    output_str: String,
     clipboard: ClipboardContext,
 }
 
 impl Default for I2A {
     fn default() -> Self {
         Self {
-            text: "Path2Image".to_owned(),
-            my_str: String::new(),
-            output: String::new(),
+            header_str: "Path2Image".to_owned(),
+            path_str: String::new(),
+            output_str: String::new(),
             clipboard: ClipboardProvider::new().expect("Couldn't create clipboard context"),
         }
     }
@@ -24,15 +24,21 @@ impl Default for I2A {
 impl eframe::App for I2A {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading(&self.text);
-            ui.text_edit_singleline(&mut self.my_str);
+            ui.heading(&self.header_str);
+            ui.text_edit_singleline(&mut self.path_str);
             if ui.button("Generate").clicked() {
-                let img = io::Reader::open(self.my_str.clone()).unwrap().decode().unwrap();
-                self.output = format!("{:?}", img.as_bytes());
+                let img = io::Reader::open(&self.path_str.trim_end_matches("\"").trim_start_matches("\""));
+                match img {
+                    Ok(image) => match image.decode() {
+                        Ok(image) => self.output_str = format!("{:?}", image.as_bytes()),
+                        Err(_) => self.output_str = format!("Decoding image failed"),
+                    },
+                    Err(_) => self.output_str = format!("Couldn't Resolve Path"),
+                }
             }
-            ui.text_edit_singleline(&mut self.output);
+            ui.text_edit_singleline(&mut self.output_str);
             if ui.button("Copy to Clipboard").clicked() {
-                self.clipboard.set_contents(self.output.clone()).expect("Couldn't copy contents to Clipboard");
+                self.clipboard.set_contents(self.output_str.clone()).expect("Couldn't copy contents to Clipboard");
             }
         });
     }
