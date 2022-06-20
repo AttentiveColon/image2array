@@ -1,6 +1,7 @@
 use eframe::{egui, NativeOptions};
 use emath::vec2;
 use clipboard::{ClipboardProvider, ClipboardContext};
+use image::io;
 
 struct I2A {
     text: String,
@@ -26,7 +27,7 @@ impl eframe::App for I2A {
             ui.heading(&self.text);
             ui.text_edit_singleline(&mut self.my_str);
             if ui.button("Generate").clicked() {
-                let img = image::io::Reader::open(self.my_str.clone()).unwrap().decode().unwrap();
+                let img = io::Reader::open(self.my_str.clone()).unwrap().decode().unwrap();
                 self.output = format!("{:?}", img.as_bytes());
             }
             ui.text_edit_singleline(&mut self.output);
