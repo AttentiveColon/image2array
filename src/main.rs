@@ -36,7 +36,11 @@ impl eframe::App for I2A {
                     Err(_) => self.output_str = format!("Couldn't Resolve Path"),
                 }
             }
-            ui.text_edit_singleline(&mut self.output_str);
+            if self.output_str.len() > 50 {
+                ui.text_edit_singleline(&mut format!("{} ...", &self.output_str[0..45]));
+            } else {
+                ui.text_edit_singleline(&mut self.output_str);
+            }
             if ui.button("Copy to Clipboard").clicked() {
                 self.clipboard.set_contents(self.output_str.clone()).expect("Couldn't copy contents to Clipboard");
             }
